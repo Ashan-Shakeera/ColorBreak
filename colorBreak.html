@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1e5a77">
+<title>Apollobery.AI · ChromaDeck | Image Color Breakdown</title>
+
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#eef3f9;
+  --surface:#ffffff;
+  --surface-2:#f5f8fc;
+  --surface-3:#eaf1f8;
+  --text:#132430;
+  --muted:#5b7186;
+  --border:#dfe8f1;
+  --primary:#1e5a77;
+  --primary-2:#2c8fb5;
+  --primary-soft:rgba(30,90,119,.10);
+  --primary-ring:rgba(44,143,181,.35);
+  --good:#0f9d6b;
+  --warn:#b0620c;
+  --warn-bg:#fef6e0;
+  --shadow-sm:0 2px 8px rgba(16,42,67,.06);
+  --shadow-md:0 14px 34px rgba(16,42,67,.10);
+  --shadow-lg:0 26px 60px rgba(16,42,67,.16);
+  --radius:22px;
+  --radius-sm:14px;
+  --radius-pill:999px;
+}
+
+body.dark{
+  --bg:#0b131d;
+  --surface:#151f2c;
+  --surface-2:#1a2634;
+  --surface-3:#20303f;
+  --text:#e9f2fa;
+  --muted:#8fa6bb;
+  --border:#25374a;
+  --primary:#3a9cc4;
+  --primary-2:#57b6da;
+  --primary-soft:rgba(87,182,218,.14);
+  --primary-ring:rgba(87,182,218,.35);
+  --warn:#f7cd8c;
+  --warn-bg:#2d2a1c;
+  --shadow-sm:0 2px 8px rgba(0,0,0,.35);
+  --shadow-md:0 14px 34px rgba(0,0,0,.45);
+  --shadow-lg:0 26px 60px rgba(0,0,0,.55);
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  min-height:100vh;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(circle at 10% -5%, rgba(44,143,181,.16), transparent 42%),
+    radial-gradient(circle at 92% 4%, rgba(30,90,119,.13), transparent 40%);
+  background-attachment:fixed;
+  color:var(--text);
+  font-family:'Inter',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  padding:1.25rem clamp(.85rem,3vw,2rem) 3.5rem;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color .3s ease,color .3s ease;
+}
+
+img{max-width:100%;display:block}
+button,input,select{font:inherit;color:inherit}
+
+.container{max-width:1640px;margin:0 auto}
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.top-actions{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:1rem;flex-wrap:wrap;margin-bottom:1.4rem;
+}
+
+.home-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:.55rem 1.25rem;border-radius:var(--radius-pill);
+  font-size:.88rem;font-weight:600;text-decoration:none;
+  color:var(--primary);
+  background:var(--primary-soft);
+  border:1px solid var(--primary-ring);
+  backdrop-filter:blur(6px);
+  transition:transform .18s ease,background-color .18s ease,color .18s ease;
+}
+.home-btn:hover{background:var(--primary);color:#fff;transform:translateY(-2px)}
+.home-btn:active{transform:translateY(0)}
+
+.theme-switch{
+  display:flex;align-items:center;gap:10px;
+  background:var(--surface);border:1px solid var(--border);
+  padding:5px 14px 5px 16px;border-radius:var(--radius-pill);
+  box-shadow:var(--shadow-sm);
+}
+.toggle-label{font-size:.8rem;font-weight:600;color:var(--muted);white-space:nowrap}
+.toggle-switch{position:relative;display:inline-block;width:52px;height:27px;flex-shrink:0}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+.slider{
+  position:absolute;inset:0;cursor:pointer;border-radius:34px;
+  background:#cbdbe2;transition:background-color .22s ease;
+}
+.slider::before{
+  content:"☀️";position:absolute;left:2px;bottom:2px;
+  width:23px;height:23px;border-radius:50%;background:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+  transition:transform .22s ease,background-color .22s ease;
+}
+input:checked + .slider{background:var(--primary-2)}
+input:checked + .slider::before{content:"🌙";transform:translateX(25px);background:#fef9e0}
+.toggle-switch input:focus-visible + .slider{outline:2px solid var(--primary-2);outline-offset:2px}
+
+/* ============================================================
+   HEADER / BRAND
+   ============================================================ */
+.header{text-align:center;margin-bottom:1.75rem}
+
+.brand-lockup{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:14px;flex-wrap:wrap;
+}
+.brand-logo{
+  height:58px;width:auto;max-width:190px;object-fit:contain;flex-shrink:0;
+  filter:drop-shadow(0 4px 12px rgba(30,90,119,.18));
+  transition:transform .25s ease,filter .25s ease;
+}
+.brand-lockup:hover .brand-logo{
+  transform:scale(1.05);
+  filter:drop-shadow(0 6px 18px rgba(30,90,119,.3));
+}
+.brand-fallback{
+  display:none;font-style:normal;font-size:2rem;line-height:1;
+  filter:drop-shadow(0 0 10px rgba(30,90,119,.25));
+}
+.header h1{
+  font-size:clamp(1.4rem,3.2vw,2.25rem);font-weight:800;letter-spacing:-.4px;
+  background:linear-gradient(135deg,#1f3e48,#2c8fb5);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+body.dark .header h1{background:linear-gradient(135deg,#a9dcf3,#57b6da);-webkit-background-clip:text;background-clip:text}
+.sub{
+  color:var(--muted);margin-top:.45rem;font-weight:500;font-size:.9rem;
+  display:inline-block;padding-bottom:6px;border-bottom:1px solid var(--border);
+}
+
+/* ============================================================
+   UPLOAD CARD
+   ============================================================ */
+.upload-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow-md);
+  padding:clamp(1rem,2.5vw,1.8rem);
+  margin-bottom:1.6rem;
+}
+.drop-zone{
+  border:2px dashed #b9d3e6;
+  border-radius:var(--radius-sm);
+  background:var(--surface-2);
+  padding:clamp(1.4rem,4vw,2.4rem) 1.2rem;
+  text-align:center;cursor:pointer;
+  transition:border-color .2s ease,background-color .2s ease,transform .2s ease;
+}
+body.dark .drop-zone{border-color:#33566e}
+.drop-zone:hover,.drop-zone:focus-visible{
+  border-color:var(--primary-2);background:var(--surface-3);outline:none;
+}
+.drop-zone.dragging{
+  border-color:var(--primary-2);
+  background:var(--primary-soft);
+  transform:scale(1.006);
+}
+.drop-icon{font-size:clamp(2rem,6vw,3rem);line-height:1;margin-bottom:.6rem}
+.drop-title{font-weight:700;font-size:1.02rem}
+.drop-sub{color:var(--muted);font-size:.83rem;margin-top:.3rem}
+
+.file-label{
+  display:inline-block;margin:1rem 0 .45rem;
+  background:var(--primary);color:#fff;
+  padding:.68rem 1.9rem;border-radius:var(--radius-pill);
+  font-weight:700;font-size:.9rem;cursor:pointer;
+  box-shadow:0 6px 18px rgba(30,90,119,.28);
+  transition:transform .16s ease,background-color .16s ease,box-shadow .16s ease;
+}
+.file-label:hover{background:#124253;transform:translateY(-2px);box-shadow:0 10px 22px rgba(30,90,119,.35)}
+body.dark .file-label{background:var(--primary-2);color:#04202c;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+body.dark .file-label:hover{background:#79c9e6}
+.file-label:active{transform:translateY(0) scale(.98)}
+
+input[type="file"]{display:none}
+
+.preview-area{
+  margin-top:1.3rem;display:flex;justify-content:center;
+  position:relative;
+}
+.preview-img{
+  max-width:100%;max-height:340px;object-fit:contain;
+  border-radius:var(--radius-sm);
+  border:1px solid var(--border);
+  background:repeating-conic-gradient(#e9edf2 0% 25%,#ffffff 0% 50%) 50%/18px 18px;
+  box-shadow:var(--shadow-sm);
+}
+body.dark .preview-img{background:repeating-conic-gradient(#1c2937 0% 25%,#233243 0% 50%) 50%/18px 18px}
+.preview-meta{
+  text-align:center;font-size:.76rem;color:var(--muted);margin-top:.6rem;
+}
+.clear-btn{
+  position:absolute;top:8px;right:8px;
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;
+  box-shadow:var(--shadow-sm);transition:.18s;
+}
+.clear-btn:hover{background:#e5484d;color:#fff;border-color:#e5484d}
+
+/* ============================================================
+   LOADER
+   ============================================================ */
+#loadingIndicator{display:flex;justify-content:center;min-height:0}
+#loadingIndicator:not(:empty){margin-top:1.2rem;min-height:52px}
+.loader{
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--surface-2);border:1px solid var(--border);
+  padding:.7rem 1.5rem;border-radius:var(--radius-pill);
+  font-weight:600;font-size:.86rem;color:var(--muted);
+}
+.spinner{
+  width:19px;height:19px;border-radius:50%;
+  border:2.5px solid var(--border);
+  border-top-color:var(--primary-2);
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ============================================================
+   RESULTS
+   ============================================================ */
+#resultsPanel{animation:fadeUp .4s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* Palette strip */
+.palette-strip{
+  display:flex;height:70px;border-radius:var(--radius-sm);
+  overflow:hidden;margin-bottom:1.1rem;
+  border:1px solid var(--border);box-shadow:var(--shadow-sm);
+}
+.palette-seg{
+  flex:1 1 0;position:relative;cursor:pointer;min-width:0;
+  transition:flex-grow .25s ease,filter .2s ease;
+}
+.palette-seg:hover{flex-grow:2.2;filter:brightness(1.06)}
+.palette-seg span{
+  position:absolute;left:50%;bottom:6px;transform:translateX(-50%);
+  font-size:.62rem;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;
+  opacity:0;white-space:nowrap;transition:opacity .2s;pointer-events:none;
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+}
+.palette-seg:hover span{opacity:1}
+
+/* Stats */
+.stats-bar{
+  display:flex;flex-wrap:wrap;gap:.8rem 1.6rem;align-items:center;
+  background:var(--surface);border:1px solid var(--border);
+  padding:.85rem 1.3rem;border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);margin-bottom:1rem;
+}
+.stat{display:flex;flex-direction:column;line-height:1.15}
+.stat-num{font-weight:800;font-size:1.08rem;letter-spacing:-.2px}
+.stat-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:600}
+.stat-sep{width:1px;height:26px;background:var(--border)}
+
+/* Controls */
+.controls{
+  display:flex;flex-wrap:wrap;gap:.65rem;align-items:center;
+  background:var(--surface);border:1px solid var(--border);
+  padding:.75rem 1rem;border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);margin-bottom:1rem;
+}
+.search-wrap{position:relative;flex:1 1 220px;min-width:180px}
+.search-wrap .s-icon{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  font-size:.85rem;opacity:.55;pointer-events:none;
+}
+.control-input,.control-select{
+  width:100%;padding:.55rem .9rem;
+  border:1px solid var(--border);border-radius:var(--radius-pill);
+  background:var(--surface-2);font-size:.85rem;
+  transition:border-color .18s,box-shadow .18s;
+  appearance:none;
+}
+.search-wrap .control-input{padding-left:34px}
+.control-select{
+  padding-right:2rem;cursor:pointer;font-weight:600;min-width:150px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),
+                   linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;
+  background-size:5px 5px,5px 5px;
+  background-repeat:no-repeat;
+}
+.control-input:focus,.control-select:focus{
+  outline:none;border-color:var(--primary-2);box-shadow:0 0 0 3px var(--primary-ring);
+}
+.control-group{display:flex;align-items:center;gap:.45rem}
+.control-group label{font-size:.75rem;font-weight:700;color:var(--muted);white-space:nowrap}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;gap:.42rem;
+  padding:.55rem 1.05rem;border-radius:var(--radius-pill);
+  border:1px solid var(--border);background:var(--surface);
+  font-size:.82rem;font-weight:600;cursor:pointer;
+  transition:transform .16s,background-color .16s,border-color .16s,box-shadow .16s;
+  white-space:nowrap;
+}
+.btn:hover{background:var(--surface-3);border-color:var(--primary-2);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{
+  background:var(--primary);border-color:var(--primary);color:#fff;
+  box-shadow:0 4px 14px rgba(30,90,119,.28);
+}
+.btn-primary:hover{background:#124253;border-color:#124253;color:#fff}
+body.dark .btn-primary{background:var(--primary-2);border-color:var(--primary-2);color:#04202c}
+body.dark .btn-primary:hover{background:#79c9e6;border-color:#79c9e6}
+
+.export-bar{
+  display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;
+  background:var(--surface);border:1px solid var(--border);
+  padding:.75rem 1rem;border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);margin-bottom:1.1rem;
+}
+.export-bar .divider{width:1px;height:24px;background:var(--border);margin:0 .2rem}
+.export-bar .label{
+  font-size:.7rem;font-weight:800;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--muted);margin-right:.2rem;
+}
+.export-bar .spacer{flex:1 1 auto}
+
+/* Color grid */
+.color-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(186px,1fr));
+  gap:14px;
+  max-height:72vh;
+  overflow-y:auto;
+  padding:6px 6px 14px;
+  border-radius:var(--radius);
+  scrollbar-width:thin;
+}
+.color-grid::-webkit-scrollbar{width:9px}
+.color-grid::-webkit-scrollbar-track{background:transparent}
+.color-grid::-webkit-scrollbar-thumb{background:#9fb9cd;border-radius:9px;border:2px solid transparent;background-clip:content-box}
+body.dark .color-grid::-webkit-scrollbar-thumb{background:#3d5a70;background-clip:content-box}
+
+.color-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);
+  overflow:hidden;cursor:pointer;
+  box-shadow:var(--shadow-sm);
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;
+  animation:cardIn .3s ease both;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.color-card:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--shadow-md);
+  border-color:var(--primary-ring);
+}
+.color-card:active{transform:translateY(-1px)}
+
+.color-swatch{
+  height:118px;width:100%;
+  position:relative;
+  transition:height .2s ease;
+}
+.color-swatch::after{
+  content:"📋";position:absolute;right:8px;bottom:8px;
+  font-size:.78rem;opacity:0;transition:opacity .2s;
+  background:rgba(255,255,255,.85);border-radius:50%;
+  width:26px;height:26px;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.2);
+}
+.color-card:hover .color-swatch::after{opacity:1}
+
+.color-info{padding:11px 11px 13px;text-align:center}
+.hex-code{
+  font-family:'SF Mono',ui-monospace,'Fira Code',monospace;
+  font-weight:800;font-size:.92rem;letter-spacing:.6px;
+  background:var(--surface-2);border:1px solid var(--border);
+  padding:5px 10px;border-radius:var(--radius-pill);
+  display:inline-block;word-break:break-all;
+  transition:background-color .18s,color .18s;
+}
+.color-card:hover .hex-code{background:var(--primary-soft);border-color:var(--primary-ring)}
+.rgb-values{
+  font-size:.7rem;color:var(--muted);margin-top:7px;
+  font-family:'SF Mono',ui-monospace,monospace;
+}
+.count-percent{
+  display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;
+  margin-top:7px;font-size:.68rem;color:var(--muted);font-weight:600;
+}
+.count-percent .pc{
+  background:var(--surface-2);border-radius:var(--radius-pill);
+  padding:2px 8px;
+}
+
+.empty-state{
+  grid-column:1/-1;text-align:center;padding:3rem 1rem;color:var(--muted);
+}
+.empty-state .em{font-size:2.4rem;display:block;margin-bottom:.6rem}
+
+.info-message{
+  background:var(--warn-bg);color:var(--warn);
+  border:1px solid rgba(176,98,12,.2);
+  padding:.85rem 1.3rem;border-radius:var(--radius-sm);
+  font-size:.82rem;line-height:1.55;margin-top:1rem;
+}
+
+.footer-note{
+  text-align:center;margin-top:2rem;font-size:.75rem;
+  color:var(--muted);line-height:1.8;
+}
+
+/* Toast */
+#toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,120%);
+  background:#132430;color:#fff;
+  padding:.75rem 1.4rem;border-radius:var(--radius-pill);
+  font-size:.85rem;font-weight:600;z-index:9999;
+  box-shadow:0 14px 34px rgba(0,0,0,.3);
+  opacity:0;pointer-events:none;
+  transition:transform .3s cubic-bezier(.2,.9,.3,1.2),opacity .3s;
+  max-width:min(90vw,420px);text-align:center;
+}
+#toast.show{transform:translate(-50%,0);opacity:1}
+#toast.error{background:#c0392b}
+#toast.success{background:#0f9d6b}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width:820px){
+  .color-grid{max-height:none;overflow:visible;padding:6px 0 14px}
+  .stats-bar{gap:.7rem 1.1rem;padding:.8rem 1rem}
+  .stat-num{font-size:.98rem}
+  .stat-sep{display:none}
+}
+@media (max-width:700px){
+  .brand-logo{height:44px;max-width:140px}
+  .export-bar .divider{display:none}
+  .export-bar .label{width:100%;margin-bottom:-.2rem}
+}
+@media (max-width:480px){
+  body{padding:1rem .75rem 3rem;font-size:14px}
+  .brand-lockup{gap:8px}
+  .brand-logo{height:38px;max-width:120px}
+  .brand-fallback{font-size:1.6rem}
+  .color-grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:11px}
+  .color-swatch{height:98px}
+  .btn{padding:.5rem .85rem;font-size:.78rem}
+  .export-bar,.controls{padding:.65rem .75rem}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ── TOP BAR ─────────────────────────────────────────── -->
+  <div class="top-actions">
+    <a href="homepage.html" class="home-btn" id="homeButton">🏠 Home</a>
+    <div class="theme-switch">
+      <span class="toggle-label">Dark mode</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="darkModeToggle" aria-label="Toggle dark mode">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- ── HEADER ──────────────────────────────────────────── -->
+  <header class="header">
+    <div class="brand-lockup">
+      <img src="logo.png" alt="HelaBerry Logo" class="brand-logo" id="brandLogo"
+           onerror="this.style.display='none';var f=document.getElementById('brandFallbackIcon');if(f){f.style.display='inline-block';}">
+      <em class="brand-fallback" id="brandFallbackIcon">🎨</em>
+      <h1>HelaBerry · HelaDeck</h1>
+    </div>
+    <div class="sub">Full image color breakdown — every pixel, every hue</div>
+  </header>
+
+  <!-- ── UPLOAD ──────────────────────────────────────────── -->
+  <section class="upload-card">
+    <div class="drop-zone" id="dropZone" tabindex="0" role="button"
+         aria-label="Upload an image to analyse its colors">
+      <div class="drop-icon">🖼️🔍</div>
+      <div class="drop-title">Drag &amp; drop your image here</div>
+      <div class="drop-sub">or paste with <b>Ctrl / ⌘ + V</b></div>
+      <span class="file-label" id="pickBtn">Select from device</span>
+      <input type="file" id="fileInput"
+             accept="image/jpeg,image/png,image/webp,image/bmp,image/gif,image/avif">
+      <div class="drop-sub" style="margin-top:.5rem">JPG · PNG · WebP · BMP · GIF — up to 50 MB</div>
+    </div>
+
+    <div class="preview-area" id="previewContainer" style="display:none">
+      <img id="previewImage" class="preview-img" alt="Uploaded image preview">
+      <button class="clear-btn" id="clearBtn" title="Remove image" aria-label="Remove image">✕</button>
+    </div>
+    <div class="preview-meta" id="previewMeta"></div>
+    <div id="loadingIndicator"></div>
+  </section>
+
+  <!-- ── RESULTS ─────────────────────────────────────────── -->
+  <section id="resultsPanel" style="display:none">
+
+    <!-- dominant palette strip -->
+    <div class="palette-strip" id="paletteStrip" title="Click a segment to copy its hex"></div>
+
+    <!-- stats -->
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-num" id="statColors">0</span><span class="stat-lbl">Unique colors</span></div>
+      <div class="stat-sep"></div>
+      <div class="stat"><span class="stat-num" id="statPixels">0</span><span class="stat-lbl">Pixels analysed</span></div>
+      <div class="stat-sep"></div>
+      <div class="stat"><span class="stat-num" id="statShown">0</span><span class="stat-lbl">Showing</span></div>
+    </div>
+
+    <!-- controls -->
+    <div class="controls">
+      <div class="search-wrap">
+        <span class="s-icon">🔍</span>
+        <input type="search" id="searchInput" class="control-input"
+               placeholder="Search hex (#1E5A77) or RGB (30,90,119)…" autocomplete="off">
+      </div>
+      <div class="control-group">
+        <label for="sortSelect">Sort</label>
+        <select id="sortSelect" class="control-select">
+          <option value="count">Most frequent</option>
+          <option value="hue">Hue (rainbow)</option>
+          <option value="lightness">Lightness</option>
+          <option value="hex">Hex A → Z</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="limitSelect">Show</label>
+        <select id="limitSelect" class="control-select">
+          <option value="60">60</option>
+          <option value="120" selected>120</option>
+          <option value="300">300</option>
+          <option value="600">600</option>
+          <option value="all">All</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- exports -->
+    <div class="export-bar">
+      <span class="label">Download</span>
+      <button class="btn btn-primary" id="exportPngBtn" title="Download a PNG color plate">🖼️ PNG Plate</button>
+      <button class="btn btn-primary" id="exportPdfBtn" title="Download a printable PDF color plate">📄 PDF Plate</button>
+      <button class="btn btn-primary" id="exportTxtBtn" title="Download a plain-text palette">📝 Text File</button>
+      <span class="divider"></span>
+      <button class="btn" id="exportCsvBtn" title="Download CSV spreadsheet">📊 CSV</button>
+      <button class="btn" id="exportJsonBtn" title="Download JSON data">🧩 JSON</button>
+      <span class="spacer"></span>
+      <button class="btn" id="copyAllHexBtn" title="Copy every hex code">📋 Copy all HEX</button>
+    </div>
+
+    <div id="colorGridContainer" class="color-grid"></div>
+    <div id="infoMessage" class="info-message" style="display:none"></div>
+  </section>
+
+  <p class="footer-note">
+    💡 Every distinct RGB value becomes its own card — click any card to copy its HEX code.<br>
+    Images larger than 700 000 pixels are analysed on a proportionally scaled canvas for speed.
+  </p>
+</div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+"use strict";
+
+/* ============================================================
+   DOM
+   ============================================================ */
+const $ = id => document.getElementById(id);
+
+const fileInput        = $('fileInput');
+const dropZone         = $('dropZone');
+const pickBtn          = $('pickBtn');
+const previewContainer = $('previewContainer');
+const previewImage     = $('previewImage');
+const previewMeta      = $('previewMeta');
+const clearBtn         = $('clearBtn');
+const loadingIndicator = $('loadingIndicator');
+const resultsPanel     = $('resultsPanel');
+const colorGrid        = $('colorGridContainer');
+const paletteStrip     = $('paletteStrip');
+const statColors       = $('statColors');
+const statPixels       = $('statPixels');
+const statShown        = $('statShown');
+const infoMsgDiv       = $('infoMessage');
+const searchInput      = $('searchInput');
+const sortSelect       = $('sortSelect');
+const limitSelect      = $('limitSelect');
+const darkModeToggle   = $('darkModeToggle');
+const toastEl          = $('toast');
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  all: [],            // every unique colour {r,g,b,hex,h,s,l,count,percent}
+  filtered: [],
+  sourceImage: null,
+  fileName: 'image',
+  totalPixels: 0,
+  wasScaled: false,
+  search: '',
+  sort: 'count',
+  limit: 120
+};
+
+/* ============================================================
+   SMALL HELPERS
+   ============================================================ */
+function toast(msg, type) {
+  toastEl.textContent = msg;
+  toastEl.className = 'show' + (type ? ' ' + type : '');
+  clearTimeout(toastEl._t);
+  toastEl._t = setTimeout(() => { toastEl.className = ''; }, 2400);
+}
+
+function copyText(text) {
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
+  return new Promise((resolve, reject) => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, 999999);
+    try { document.execCommand('copy') ? resolve() : reject(new Error('copy failed')); }
+    catch (e) { reject(e); }
+    finally { document.body.removeChild(ta); }
+  });
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 1200);
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+}
+
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  const d = max - min;
+  let h = 0, s = 0;
+  if (d !== 0) {
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+
+/** Perceived luminance → pick readable text colour */
+function readableOn(r, g, b) {
+  return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#132430' : '#ffffff';
+}
+
+/** Rounded-rect path (safe across browsers) */
+function rr(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+(function initDarkMode() {
+  const stored = localStorage.getItem('apollobery_darkmode');
+  let dark;
+  if (stored === 'enabled') dark = true;
+  else if (stored === 'disabled') dark = false;
+  else dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.body.classList.toggle('dark', dark);
+  darkModeToggle.checked = dark;
+})();
+
+darkModeToggle.addEventListener('change', e => {
+  document.body.classList.toggle('dark', e.target.checked);
+  localStorage.setItem('apollobery_darkmode', e.target.checked ? 'enabled' : 'disabled');
+});
+
+/* ============================================================
+   LOADING / RESET
+   ============================================================ */
+function setLoading(on, text) {
+  loadingIndicator.innerHTML = on
+    ? '<div class="loader"><div class="spinner"></div> ' + (text || 'Analysing colors…') + '</div>'
+    : '';
+}
+
+function resetResults() {
+  state.all = [];
+  state.filtered = [];
+  resultsPanel.style.display = 'none';
+  colorGrid.innerHTML = '';
+  paletteStrip.innerHTML = '';
+  infoMsgDiv.style.display = 'none';
+}
+
+/* ============================================================
+   COLOR EXTRACTION
+   ============================================================ */
+function extractColors(imgElement) {
+  return new Promise((resolve, reject) => {
+    try {
+      const ow = imgElement.naturalWidth || imgElement.width;
+      const oh = imgElement.naturalHeight || imgElement.height;
+      if (!ow || !oh) return reject(new Error('Invalid or empty image.'));
+
+      const MAX_PIXELS = 700000;
+      let tw = ow, th = oh, wasScaled = false;
+
+      if (ow * oh > MAX_PIXELS) {
+        const scale = Math.sqrt(MAX_PIXELS / (ow * oh));
+        tw = Math.max(1, Math.floor(ow * scale));
+        th = Math.max(1, Math.floor(oh * scale));
+        wasScaled = true;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = tw;
+      canvas.height = th;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return reject(new Error('Canvas is not supported in this browser.'));
+
+      // White backing so transparent PNGs resolve predictably
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, tw, th);
+      ctx.drawImage(imgElement, 0, 0, tw, th);
+
+      const data = ctx.getImageData(0, 0, tw, th).data;
+      const totalPixels = tw * th;
+      const map = new Map();
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        const key = (r << 16) | (g << 8) | b;      // integer key = much faster
+        map.set(key, (map.get(key) || 0) + 1);
+      }
+
+      const colors = new Array(map.size);
+      let idx = 0;
+      map.forEach((count, key) => {
+        const r = (key >> 16) & 255, g = (key >> 8) & 255, b = key & 255;
+        const hsl = rgbToHsl(r, g, b);
+        colors[idx++] = {
+          r, g, b,
+          hex: rgbToHex(r, g, b),
+          h: hsl.h, s: hsl.s, l: hsl.l,
+          count,
+          percent: (count / totalPixels) * 100
+        };
+      });
+
+      colors.sort((a, b) => b.count - a.count);
+      resolve({ colors, totalPixels, wasScaled, ow, oh, tw, th });
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
+/* ============================================================
+   FILTER / SORT / RENDER
+   ============================================================ */
+function applyFilters() {
+  const q = state.search.trim().toLowerCase().replace(/^#/, '');
+  let list = state.all;
+
+  if (q) {
+    list = list.filter(c => {
+      if (c.hex.slice(1).toLowerCase().includes(q)) return true;
+      if ((c.r + ',' + c.g + ',' + c.b).includes(q)) return true;
+      if ((c.r + ' ' + c.g + ' ' + c.b).includes(q)) return true;
+      return false;
+    });
+  }
+
+  const sorted = list.slice();
+  switch (state.sort) {
+    case 'hue':
+      sorted.sort((a, b) => {
+        const aGray = a.s < 8, bGray = b.s < 8;
+        if (aGray !== bGray) return aGray ? 1 : -1;
+        if (aGray) return a.l - b.l;
+        if (Math.abs(a.h - b.h) > 0.5) return a.h - b.h;
+        return a.l - b.l;
+      });
+      break;
+    case 'lightness':
+      sorted.sort((a, b) => b.l - a.l || b.count - a.count);
+      break;
+    case 'hex':
+      sorted.sort((a, b) => a.hex.localeCompare(b.hex));
+      break;
+    default:
+      sorted.sort((a, b) => b.count - a.count);
+  }
+
+  state.filtered = sorted;
+  renderGrid();
+  renderPaletteStrip();
+}
+
+function renderGrid() {
+  const list = state.filtered;
+  const shown = state.limit === Infinity ? list : list.slice(0, state.limit);
+
+  statShown.textContent = shown.length.toLocaleString();
+
+  if (!shown.length) {
+    colorGrid.innerHTML =
+      '<div class="empty-state"><span class="em">🔎</span>' +
+      (state.all.length ? 'No colors match your search.' : 'No colors found. Try a different image.') +
+      '</div>';
+    return;
+  }
+
+  const frag = document.createDocumentFragment();
+  const wrap = document.createElement('div');
+  wrap.style.display = 'contents';
+
+  let html = '';
+  for (let i = 0; i < shown.length; i++) {
+    const c = shown[i];
+    const fg = readableOn(c.r, c.g, c.b);
+    html +=
+      '<article class="color-card" data-hex="' + c.hex + '" data-index="' + i + '" ' +
+      'title="Click to copy ' + c.hex + '" style="animation-delay:' + Math.min(i, 40) * 6 + 'ms">' +
+        '<div class="color-swatch" style="background:' + c.hex + ';color:' + fg + '"></div>' +
+        '<div class="color-info">' +
+          '<div class="hex-code">' + c.hex + '</div>' +
+          '<div class="rgb-values">RGB(' + c.r + ', ' + c.g + ', ' + c.b + ')</div>' +
+          '<div class="count-percent">' +
+            '<span class="pc">' + c.count.toLocaleString() + ' px</span>' +
+            '<span class="pc">' + c.percent.toFixed(2) + '%</span>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+  }
+  wrap.innerHTML = html;
+  frag.appendChild(wrap);
+  colorGrid.innerHTML = '';
+  colorGrid.appendChild(frag);
+
+  // Delegate clicks (fast, one listener)
+  if (!colorGrid._bound) {
+    colorGrid._bound = true;
+    colorGrid.addEventListener('click', e => {
+      const card = e.target.closest('.color-card');
+      if (!card) return;
+      const hex = card.dataset.hex;
+      copyText(hex).then(() => {
+        toast('Copied ' + hex, 'success');
+        const span = card.querySelector('.hex-code');
+        if (span) {
+          const original = span.textContent;
+          span.textContent = '✓ Copied!';
+          setTimeout(() => { span.textContent = original; }, 850);
+        }
+      }).catch(() => toast('Could not copy to clipboard', 'error'));
+    });
+  }
+}
+
+function renderPaletteStrip() {
+  const top = state.filtered.slice(0, 12);
+  if (!top.length) { paletteStrip.innerHTML = ''; return; }
+  const total = top.reduce((s, c) => s + c.count, 0) || 1;
+  paletteStrip.innerHTML = top.map(c => {
+    const pct = (c.count / total) * 100;
+    return '<div class="palette-seg" data-hex="' + c.hex + '" ' +
+           'style="background:' + c.hex + ';flex-grow:' + Math.max(pct, 4).toFixed(1) + '" ' +
+           'title="' + c.hex + ' — ' + c.percent.toFixed(2) + '%">' +
+           '<span style="color:' + readableOn(c.r, c.g, c.b) + '">' + c.hex + '</span></div>';
+  }).join('');
+
+  paletteStrip.querySelectorAll('.palette-seg').forEach(seg => {
+    seg.addEventListener('click', () => {
+      const hex = seg.dataset.hex;
+      copyText(hex).then(() => toast('Copied ' + hex, 'success'))
+                   .catch(() => toast('Could not copy', 'error'));
+    });
+  });
+}
+
+/* ============================================================
+   FILE HANDLING
+   ============================================================ */
+async function handleImageFile(file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) { toast('Please choose an image file.', 'error'); return; }
+  if (file.size > 50 * 1024 * 1024)    { toast('Image is larger than 50 MB.', 'error'); return; }
+
+  resetResults();
+  setLoading(true, 'Loading image…');
+  previewContainer.style.display = 'none';
+  previewMeta.textContent = '';
+
+  const objectURL = URL.createObjectURL(file);
+  const img = new Image();
+
+  try {
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = () => reject(new Error('The image could not be loaded.'));
+      img.src = objectURL;
+    });
+
+    previewImage.src = objectURL;
+    previewContainer.style.display = 'flex';
+
+    setLoading(true, 'Scanning every pixel…');
+    // Give the browser a frame to paint the loader
+    await new Promise(r => setTimeout(r, 30));
+
+    const result = await extractColors(img);
+
+    state.sourceImage = img;
+    state.fileName = (file.name || 'image').replace(/\.[^.]+$/, '');
+    state.all = result.colors;
+    state.totalPixels = result.totalPixels;
+    state.wasScaled = result.wasScaled;
+
+    previewMeta.textContent =
+      file.name + ' · ' + result.ow + '×' + result.oh + ' px' +
+      (result.wasScaled ? '  (analysed at ' + result.tw + '×' + result.th + ')' : '');
+
+    statColors.textContent = result.colors.length.toLocaleString();
+    statPixels.textContent = result.totalPixels.toLocaleString();
+
+    applyFilters();
+    resultsPanel.style.display = 'block';
+    setLoading(false);
+
+    // Informational banner
+    if (result.wasScaled) {
+      infoMsgDiv.style.display = 'block';
+      infoMsgDiv.innerHTML =
+        '🔍 <b>Large image detected.</b> The analysis ran on a proportionally scaled canvas ' +
+        '(' + result.tw + '×' + result.th + ') to keep things fast, so the palette is ' +
+        'representative of the whole picture.';
+    } else if (result.colors.length > 2000) {
+      infoMsgDiv.style.display = 'block';
+      infoMsgDiv.innerHTML =
+        '📊 This image contains <b>' + result.colors.length.toLocaleString() +
+        '</b> unique colors. Use the <b>Show</b> filter to keep the grid snappy, ' +
+        'or export the full list as TXT / CSV / JSON.';
+    } else {
+      infoMsgDiv.style.display = 'none';
+    }
+
+    setTimeout(() => resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+  } catch (err) {
+    console.error(err);
+    setLoading(false);
+    previewContainer.style.display = 'none';
+    toast('Error: ' + err.message, 'error');
+  } finally {
+    // The decoded bitmap stays in memory — revoking the URL is safe
+    setTimeout(() => URL.revokeObjectURL(objectURL), 1500);
+  }
+}
+
+/* ============================================================
+   INPUT EVENTS
+   ============================================================ */
+fileInput.addEventListener('change', e => {
+  const f = e.target.files && e.target.files[0];
+  if (f) handleImageFile(f);
+  e.target.value = '';       // allow re-selecting the same file
+});
+
+pickBtn.addEventListener('click', e => { e.stopPropagation(); fileInput.click(); });
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+});
+
+['dragenter', 'dragover'].forEach(ev =>
+  dropZone.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation();
+    dropZone.classList.add('dragging');
+  })
+);
+['dragleave', 'drop'].forEach(ev =>
+  dropZone.addEventListener(ev, e => {
+    e.preventDefault(); e.stopPropagation();
+    if (ev === 'dragleave' && dropZone.contains(e.relatedTarget)) return;
+    dropZone.classList.remove('dragging');
+  })
+);
+dropZone.addEventListener('drop', e => {
+  const files = e.dataTransfer && e.dataTransfer.files;
+  if (files && files.length) handleImageFile(files[0]);
+});
+
+// Whole-window drag guard
+window.addEventListener('dragover', e => e.preventDefault());
+window.addEventListener('drop', e => e.preventDefault());
+
+// Paste support
+window.addEventListener('paste', e => {
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type && item.type.startsWith('image/')) {
+      const f = item.getAsFile();
+      if (f) { handleImageFile(f); break; }
+    }
+  }
+});
+
+clearBtn.addEventListener('click', e => {
+  e.stopPropagation();
+  previewContainer.style.display = 'none';
+  previewMeta.textContent = '';
+  previewImage.removeAttribute('src');
+  state.sourceImage = null;
+  resetResults();
+  toast('Image removed');
+});
+
+/* ============================================================
+   CONTROLS
+   ============================================================ */
+let searchTimer = null;
+searchInput.addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  const val = e.target.value;
+  searchTimer = setTimeout(() => { state.search = val; applyFilters(); }, 160);
+});
+
+sortSelect.addEventListener('change', e => { state.sort = e.target.value; applyFilters(); });
+
+limitSelect.addEventListener('change', e => {
+  state.limit = e.target.value === 'all' ? Infinity : parseInt(e.target.value, 10);
+  renderGrid();
+});
+
+/* ============================================================
+   EXPORT — TXT
+   ============================================================ */
+function exportTXT() {
+  const colors = state.filtered;
+  if (!colors.length) return toast('Nothing to export yet.', 'error');
+
+  const lines = [];
+  lines.push('==========================================================');
+  lines.push('  HelaBerry · HelaDeck — Color Breakdown');
+  lines.push('==========================================================');
+  lines.push('Source file     : ' + state.fileName);
+  lines.push('Unique colors   : ' + colors.length.toLocaleString());
+  lines.push('Pixels analysed : ' + state.totalPixels.toLocaleString());
+  lines.push('Generated       : ' + new Date().toLocaleString());
+  lines.push('');
+  lines.push('----------------------------------------------------------');
+  lines.push('  HEX LIST (one per line — paste straight into any tool)');
+  lines.push('----------------------------------------------------------');
+  colors.forEach(c => lines.push(c.hex));
+  lines.push('');
+  lines.push('----------------------------------------------------------');
+  lines.push('  DETAIL');
+  lines.push('----------------------------------------------------------');
+  lines.push('HEX       RGB                 HSL                  PIXELS      %');
+  colors.forEach(c => {
+    lines.push(
+      c.hex.padEnd(9) +
+      ('RGB(' + c.r + ', ' + c.g + ', ' + c.b + ')').padEnd(20) +
+      ('HSL(' + c.h + ', ' + c.s + '%, ' + c.l + '%)').padEnd(21) +
+      String(c.count).padStart(9) + '  ' +
+      c.percent.toFixed(3).padStart(7)
+    );
+  });
+  lines.push('');
+  lines.push('— Generated with HelaBerry · HelaDeck');
+
+  downloadBlob(new Blob([lines.join('\n')], { type: 'text/plain;charset=utf-8' }),
+               state.fileName + '-colors.txt');
+  toast('Text file downloaded', 'success');
+}
+
+/* ============================================================
+   EXPORT — CSV
+   ============================================================ */
+function exportCSV() {
+  const colors = state.filtered;
+  if (!colors.length) return toast('Nothing to export yet.', 'error');
+
+  const esc = v => {
+    const s = String(v);
+    return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+  };
+  const rows = [['Hex', 'R', 'G', 'B', 'H', 'S', 'L', 'Pixel Count', 'Percentage']];
+  colors.forEach(c => rows.push([c.hex, c.r, c.g, c.b, c.h, c.s, c.l, c.count, c.percent.toFixed(4)]));
+
+  const csv = rows.map(r => r.map(esc).join(',')).join('\r\n');
+  downloadBlob(new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' }),
+               state.fileName + '-colors.csv');
+  toast('CSV downloaded', 'success');
+}
+
+/* ============================================================
+   EXPORT — JSON
+   ============================================================ */
+function exportJSON() {
+  const colors = state.filtered;
+  if (!colors.length) return toast('Nothing to export yet.', 'error');
+
+  const payload = {
+    generator: 'HelaBerry · HelaDeck',
+    sourceFile: state.fileName,
+    generatedAt: new Date().toISOString(),
+    uniqueColors: colors.length,
+    pixelsAnalyzed: state.totalPixels,
+    colors: colors.map(c => ({
+      hex: c.hex,
+      rgb: { r: c.r, g: c.g, b: c.b },
+      hsl: { h: c.h, s: c.s, l: c.l },
+      pixelCount: c.count,
+      percentage: parseFloat(c.percent.toFixed(4))
+    }))
+  };
+
+  downloadBlob(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }),
+               state.fileName + '-colors.json');
+  toast('JSON downloaded', 'success');
+}
+
+/* ============================================================
+   EXPORT — COPY ALL HEX
+   ============================================================ */
+function copyAllHex() {
+  if (!state.filtered.length) return toast('Nothing to copy yet.', 'error');
+  const list = state.filtered.map(c => c.hex).join('\n');
+  copyText(list).then(() => {
+    toast('Copied ' + state.filtered.length.toLocaleString() + ' hex codes', 'success');
+    const btn = $('copyAllHexBtn');
+    const original = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    setTimeout(() => { btn.innerHTML = original; }, 1500);
+  }).catch(() => toast('Could not copy', 'error'));
+}
+
+/* ============================================================
+   EXPORT — PNG COLOR PLATE
+   ============================================================ */
+function exportPNG() {
+  const MAX = 240;
+  const colors = state.filtered.slice(0, MAX);
+  if (!colors.length) return toast('Nothing to export yet.', 'error');
+
+  const cols = 5;
+  const padX = 44, padTop = 168, padBottom = 62;
+  const cardW = 200, swatchH = 96, textH = 58, cardH = swatchH + textH;
+  const gap = 16;
+  const rows = Math.ceil(colors.length / cols);
+
+  const W = padX * 2 + cols * cardW + (cols - 1) * gap;
+  const H = padTop + rows * (cardH + gap) - gap + padBottom;
+
+  const SCALE = H > 7000 ? 1 : 2;
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(W * SCALE);
+  canvas.height = Math.round(H * SCALE);
+  const ctx = canvas.getContext('2d');
+  ctx.scale(SCALE, SCALE);
+
+  const FONT = "'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
+  const MONO = "'SF Mono', ui-monospace, 'Fira Code', Consolas, monospace";
+
+  // Background
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, W, H);
+
+  // Subtle top accent bar
+  const grad = ctx.createLinearGradient(0, 0, W, 0);
+  grad.addColorStop(0, '#1e5a77');
+  grad.addColorStop(1, '#57b6da');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, 8);
+
+  // Title
+  ctx.fillStyle = '#132430';
+  ctx.font = '800 30px ' + FONT;
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('Color Palette', padX, 74);
+
+  ctx.fillStyle = '#5b7186';
+  ctx.font = '500 14px ' + FONT;
+  const subtitle = state.fileName + '  ·  ' + state.filtered.length.toLocaleString() +
+                   ' unique colors  ·  ' + state.totalPixels.toLocaleString() + ' pixels analysed' +
+                   (state.filtered.length > MAX ? '  ·  showing top ' + MAX : '');
+  ctx.fillText(subtitle, padX, 100);
+
+  ctx.fillStyle = '#5b7186';
+  ctx.font = '500 12px ' + FONT;
+  ctx.fillText('Generated ' + new Date().toLocaleString() + '  ·  HelaBerry · HelaDeck', padX, 122);
+
+  // Thumbnail of the source image (top-right)
+  if (state.sourceImage && state.sourceImage.naturalWidth) {
+    const box = 92;
+    const bx = W - padX - box;
+    const by = 44;
+    const img = state.sourceImage;
+    const ratio = img.naturalWidth / img.naturalHeight;
+    let dw = box, dh = box;
+    if (ratio > 1) dh = box / ratio; else dw = box * ratio;
+
+    ctx.save();
+    rr(ctx, bx, by, box, box, 14);
+    ctx.clip();
+    ctx.fillStyle = '#f1f5f9';
+    ctx.fillRect(bx, by, box, box);
+    ctx.drawImage(img, bx + (box - dw) / 2, by + (box - dh) / 2, dw, dh);
+    ctx.restore();
+
+    ctx.strokeStyle = '#dfe8f1';
+    ctx.lineWidth = 1.5;
+    rr(ctx, bx, by, box, box, 14);
+    ctx.stroke();
+  }
+
+  // Divider
+  ctx.strokeStyle = '#e6edf4';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(padX, 146);
+  ctx.lineTo(W - padX, 146);
+  ctx.stroke();
+
+  // Swatch cards
+  colors.forEach((c, i) => {
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = padX + col * (cardW + gap);
+    const y = padTop + row * (cardH + gap);
+
+    // Card background
+    ctx.fillStyle = '#ffffff';
+    rr(ctx, x, y, cardW, cardH, 14);
+    ctx.fill();
+    ctx.strokeStyle = '#e6edf4';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Swatch
+    ctx.save();
+    rr(ctx, x, y, cardW, swatchH, 14);
+    ctx.clip();
+    ctx.fillStyle = c.hex;
+    ctx.fillRect(x, y, cardW, swatchH);
+    ctx.restore();
+
+    // Hex inside the swatch
+    ctx.fillStyle = readableOn(c.r, c.g, c.b);
+    ctx.font = '700 15px ' + MONO;
+    ctx.textAlign = 'center';
+    ctx.fillText(c.hex, x + cardW / 2, y + swatchH - 16);
+    ctx.textAlign = 'left';
+
+    // Texts below
+    ctx.fillStyle = '#132430';
+    ctx.font = '600 12px ' + MONO;
+    ctx.fillText('RGB ' + c.r + ', ' + c.g + ', ' + c.b, x + 12, y + swatchH + 22);
+
+    ctx.fillStyle = '#7b8fa3';
+    ctx.font = '600 11px ' + FONT;
+    ctx.fillText(c.count.toLocaleString() + ' px  ·  ' + c.percent.toFixed(2) + '%', x + 12, y + swatchH + 40);
+
+    // Tiny order badge
+    ctx.fillStyle = '#c3d2df';
+    ctx.font = '700 10px ' + FONT;
+    ctx.textAlign = 'right';
+    ctx.fillText('#' + (i + 1), x + cardW - 12, y + swatchH + 40);
+    ctx.textAlign = 'left';
+  });
+
+  // Footer
+  ctx.fillStyle = '#93a6b8';
+  ctx.font = '500 11px ' + FONT;
+  ctx.fillText('helaberry.ai  ·  HelaDeck color plate', padX, H - 26);
+  ctx.textAlign = 'right';
+  ctx.fillText(colors.length + ' colors', W - padX, H - 26);
+  ctx.textAlign = 'left';
+
+  canvas.toBlob(blob => {
+    if (!blob) return toast('PNG export failed.', 'error');
+    downloadBlob(blob, state.fileName + '-palette.png');
+    toast('PNG plate downloaded', 'success');
+  }, 'image/png');
+
+  if (state.filtered.length > MAX) {
+    setTimeout(() => toast('PNG limited to the top ' + MAX + ' colors', 'error'), 2600);
+  }
+}
+
+/* ============================================================
+   EXPORT — PDF COLOR PLATE (self-contained, no libraries)
+   ============================================================ */
+function pdfEscape(s) {
+  return String(s)
+    .replace(/\\/g, '\\\\')
+    .replace(/\(/g, '\\(')
+    .replace(/\)/g, '\\)')
+    .replace(/[^\x20-\x7E]/g, '');   // keep it ASCII → byte length === string length
+}
+
+function assemblePDF(pageStreams, W, H) {
+  const n = pageStreams.length;
+  const objs = [];
+  const pageStart = 3;
+  const contentStart = pageStart + n;
+  const fontNum = contentStart + n;
+
+  const kids = [];
+  for (let i = 0; i < n; i++) kids.push((pageStart + i) + ' 0 R');
+
+  objs[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+  objs[2] = '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + n + ' >>';
+
+  for (let i = 0; i < n; i++) {
+    objs[pageStart + i] =
+      '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W + ' ' + H + '] ' +
+      '/Resources << /Font << /F1 ' + fontNum + ' 0 R >> >> ' +
+      '/Contents ' + (contentStart + i) + ' 0 R >>';
+  }
+
+  for (let i = 0; i < n; i++) {
+    const s = pageStreams[i];
+    objs[contentStart + i] = '<< /Length ' + s.length + ' >>\nstream\n' + s + '\nendstream';
+  }
+
+  objs[fontNum] =
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+
+  let out = '%PDF-1.4\n';
+  const offsets = [];
+  for (let i = 1; i < objs.length; i++) {
+    offsets[i] = out.length;
+    out += i + ' 0 obj\n' + objs[i] + '\nendobj\n';
+  }
+
+  const xref = out.length;
+  out += 'xref\n0 ' + objs.length + '\n';
+  out += '0000000000 65535 f \n';
+  for (let i = 1; i < objs.length; i++) {
+    out += String(offsets[i]).padStart(10, '0') + ' 00000 n \n';
+  }
+  out += 'trailer\n<< /Size ' + objs.length + ' /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF\n';
+
+  return out;
+}
+
+function exportPDF() {
+  const MAX = 300;
+  const colors = state.filtered.slice(0, MAX);
+  if (!colors.length) return toast('Nothing to export yet.', 'error');
+
+  const PW = 595.28, PH = 841.89;
+  const margin = 36;
+  const cols = 5;
+  const gap = 10;
+
+  const usableW = PW - margin * 2;
+  const cardW = (usableW - gap * (cols - 1)) / cols;
+  const swatchH = 62;
+  const cardH = swatchH + 34;
+  const rowGap = 12;
+
+  const topY = PH - 118;
+  const bottomLimit = 58;
+  const rowsPerPage = Math.max(1, Math.floor((topY - bottomLimit) / (cardH + rowGap)));
+  const perPage = cols * rowsPerPage;
+  const pageCount = Math.ceil(colors.length / perPage);
+
+  const title = 'HelaBerry - HelaDeck  |  Color Palette';
+  const subtitle = state.fileName + '   -   ' + state.filtered.length.toLocaleString() +
+                   ' unique colors   -   ' + state.totalPixels.toLocaleString() + ' pixels analysed';
+
+  const pages = [];
+
+  for (let p = 0; p < pageCount; p++) {
+    const slice = colors.slice(p * perPage, (p + 1) * perPage);
+    let s = '';
+
+    // White page
+    s += '1 1 1 rg\n0 0 ' + PW.toFixed(2) + ' ' + PH.toFixed(2) + ' re f\n';
+
+    // Top accent bar
+    s += '0.118 0.353 0.467 rg\n0 ' + (PH - 6).toFixed(2) + ' ' + PW.toFixed(2) + ' 6 re f\n';
+    s += '0.341 0.714 0.855 rg\n' + (PW * 0.55).toFixed(2) + ' ' + (PH - 6).toFixed(2) + ' ' +
+         (PW * 0.45).toFixed(2) + ' 6 re f\n';
+
+    // Title block
+    s += '0.075 0.141 0.188 rg\nBT /F1 19 Tf ' + margin + ' ' + (PH - 58).toFixed(2) +
+         ' Td (' + pdfEscape(title) + ') Tj ET\n';
+    s += '0.357 0.443 0.525 rg\nBT /F1 9.5 Tf ' + margin + ' ' + (PH - 76).toFixed(2) +
+         ' Td (' + pdfEscape(subtitle) + ') Tj ET\n';
+    s += '0.545 0.588 0.639 rg\nBT /F1 8 Tf ' + margin + ' ' + (PH - 90).toFixed(2) +
+         ' Td (' + pdfEscape('Generated ' + new Date().toLocaleString()) + ') Tj ET\n';
+
+    // Divider
+    s += '0.878 0.910 0.945 RG 1 w\n' + margin + ' ' + (PH - 100).toFixed(2) + ' m ' +
+         (PW - margin).toFixed(2) + ' ' + (PH - 100).toFixed(2) + ' l S\n';
+
+    // Swatches
+    slice.forEach((c, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const x = margin + col * (cardW + gap);
+      const y = topY - row * (cardH + rowGap) - swatchH;
+
+      const r = (c.r / 255).toFixed(4);
+      const g = (c.g / 255).toFixed(4);
+      const b = (c.b / 255).toFixed(4);
+
+      s += r + ' ' + g + ' ' + b + ' rg\n';
+      s += x.toFixed(2) + ' ' + y.toFixed(2) + ' ' + cardW.toFixed(2) + ' ' + swatchH + ' re f\n';
+
+      s += '0.827 0.871 0.906 RG 0.6 w\n';
+      s += x.toFixed(2) + ' ' + y.toFixed(2) + ' ' + cardW.toFixed(2) + ' ' + swatchH + ' re S\n';
+
+      // Hex (bold-ish dark)
+      s += '0.075 0.141 0.188 rg\nBT /F1 9 Tf ' + (x + 1).toFixed(2) + ' ' +
+           (y - 13).toFixed(2) + ' Td (' + pdfEscape(c.hex) + ') Tj ET\n';
+
+      // RGB
+      s += '0.420 0.502 0.580 rg\nBT /F1 7 Tf ' + (x + 1).toFixed(2) + ' ' +
+           (y - 23).toFixed(2) + ' Td (' + pdfEscape('RGB ' + c.r + ' ' + c.g + ' ' + c.b) +
+           ') Tj ET\n';
+
+      // Count / percent
+      s += 'BT /F1 7 Tf ' + (x + 1).toFixed(2) + ' ' + (y - 32).toFixed(2) +
+           ' Td (' + pdfEscape(c.count.toLocaleString() + ' px  ' + c.percent.toFixed(2) + '%') +
+           ') Tj ET\n';
+    });
+
+    // Footer
+    s += '0.576 0.651 0.714 rg\nBT /F1 8 Tf ' + margin + ' 32 Td (' +
+         pdfEscape('helaberry.ai  -  HelaDeck color plate') + ') Tj ET\n';
+    s += 'BT /F1 8 Tf ' + (PW - margin - 110).toFixed(2) + ' 32 Td (' +
+         pdfEscape('Page ' + (p + 1) + ' of ' + pageCount + '   -   ' + colors.length + ' colors') +
+         ') Tj ET\n';
+
+    pages.push(s);
+  }
+
+  const pdf = assemblePDF(pages, PW, PH);
+  downloadBlob(new Blob([pdf], { type: 'application/pdf' }),
+               state.fileName + '-palette.pdf');
+  toast('PDF plate downloaded', 'success');
+
+  if (state.filtered.length > MAX) {
+    setTimeout(() => toast('PDF limited to the top ' + MAX + ' colors', 'error'), 2600);
+  }
+}
+
+/* ============================================================
+   WIRE UP EXPORT BUTTONS
+   ============================================================ */
+$('exportPngBtn').addEventListener('click', exportPNG);
+$('exportPdfBtn').addEventListener('click', exportPDF);
+$('exportTxtBtn').addEventListener('click', exportTXT);
+$('exportCsvBtn').addEventListener('click', exportCSV);
+$('exportJsonBtn').addEventListener('click', exportJSON);
+$('copyAllHexBtn').addEventListener('click', copyAllHex);
+
+})();
+</script>
+</body>
+</html>
